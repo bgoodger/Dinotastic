@@ -1,4 +1,3 @@
-ass
+COMPSYS 302 Assignment 2 
 ===
 
-COMPSYS 302 Assignment 2 
