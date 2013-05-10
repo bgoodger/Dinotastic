@@ -8,7 +8,7 @@ public class Missile {
     private Image image;
     boolean visible;
 
-    private final int BOARD_WIDTH = 390;
+    private final int BOARD_WIDTH = 1000;
     private final int MISSILE_SPEED = 2;
 
     public Missile(int x, int y) {

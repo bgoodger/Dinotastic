@@ -7,6 +7,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+import java.awt.Image;
+import javax.swing.ImageIcon;
+
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -37,6 +40,10 @@ public class Board extends JPanel implements ActionListener {
 
         Graphics2D g2d = (Graphics2D)g;
         g2d.drawImage(craft.getImage(), craft.getX(), craft.getY(), this);
+
+
+        ImageIcon ii = new ImageIcon(this.getClass().getResource("top.png"));
+        g2d.drawImage((ii.getImage()),0,0,this);
 
         ArrayList ms = craft.getMissiles();
 

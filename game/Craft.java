@@ -18,7 +18,7 @@ public class Craft {
 
     private ArrayList<Missile> missiles;
 
-    private final int CRAFT_SIZE = 20;
+    private final int CRAFT_SIZE = 10;
 
     public Craft() {
         ImageIcon ii = new ImageIcon(this.getClass().getResource(craft));
@@ -59,6 +59,8 @@ public class Craft {
         }
 
         if (key == KeyEvent.VK_LEFT) {
+            ImageIcon ii = new ImageIcon(this.getClass().getResource(craft));
+            image = ii.getImage();
             dx = -1;
         }
 
@@ -91,11 +93,11 @@ public class Craft {
         }
 
         if (key == KeyEvent.VK_UP) {
-            dy = 0;
+            dy = 1;
         }
 
         if (key == KeyEvent.VK_DOWN) {
-            dy = 0;
+            dy = 1;
         }
     }
 }

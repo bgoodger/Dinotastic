@@ -7,7 +7,7 @@ public class Main extends JFrame {
         add(new Board());
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(640, 580);
         setLocationRelativeTo(null);
         setTitle("R - Type");
         setResizable(false);
@@ -15,6 +15,6 @@ public class Main extends JFrame {
     }
 
     public static void main(String[] args) {
-        new Main();
+        new Main(); 
     }
 }
