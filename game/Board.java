@@ -5,6 +5,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
+import java.awt.Rectangle; 
 import java.awt.event.KeyEvent;
 
 import java.awt.Image;
@@ -54,6 +55,7 @@ public class Board extends JPanel implements ActionListener {
 
         Toolkit.getDefaultToolkit().sync();
         g.dispose();
+
     }
 
 
@@ -68,9 +70,13 @@ public class Board extends JPanel implements ActionListener {
         }
 
         craft.move();
+        checkCollisions();
         repaint();  
     }
 
+    public void checkCollisions() {
+
+    }
 
     private class TAdapter extends KeyAdapter {
 

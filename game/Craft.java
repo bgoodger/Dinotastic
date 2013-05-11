@@ -1,39 +1,76 @@
 
 import java.awt.Image;
+import java.awt.Rectangle; 
 import java.awt.event.KeyEvent;
 
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 
+
+
 public class Craft {
 
-    private String craft = "craft.png";
+    private String initial_craft = "walk-right-1.png";
 
+    private Image[] walkLeftImages = new Image[4];
+    private Image[] walkRightImages = new Image[4];
+    ImageIcon ii;
+    private Boolean falling = true ; 
     private int dx;
-    private int dy;
+    private int dy = 1;
     private int x;
     private int y;
     private Image image;
+    private int width;
+    private int height;
 
     private ArrayList<Missile> missiles;
 
     private final int CRAFT_SIZE = 10;
 
     public Craft() {
-        ImageIcon ii = new ImageIcon(this.getClass().getResource(craft));
+
+        for (int i =0; i<4; i++) {
+            ii = new ImageIcon("walk-left-" + (i+1) + ".png");
+            walkLeftImages[i] = ii.getImage();
+
+            ii = new ImageIcon("walk-right-" + (i+1) + ".png");
+            walkRightImages[i] = ii.getImage();
+        }
+
+
+        ImageIcon ii = new ImageIcon(this.getClass().getResource(initial_craft));
         image = ii.getImage();
         missiles = new ArrayList<Missile>();
         x = 40;
         y = 60;
+
+        width = image.getWidth(null);
+        height = image.getHeight(null);
     }
 
 
     public void move() {
-        x += dx;
-        y += dy;
-    }
 
+
+        if ( x >= 0 && x <= 520)
+            x += dx;
+        if (falling) {
+            y += dy;
+        }  
+
+        if (y>450) {
+            falling = false;
+            dy = 0;
+            // DEAD = TRUE
+        }
+
+        if (x < 0)
+            x = 0   ;
+        if (x > 520)
+            x = 520; 
+    }
     public int getX() {
         return x;
     }
@@ -59,26 +96,31 @@ public class Craft {
         }
 
         if (key == KeyEvent.VK_LEFT) {
-            ImageIcon ii = new ImageIcon(this.getClass().getResource(craft));
-            image = ii.getImage();
-            dx = -1;
+                ImageIcon ii = new ImageIcon(this.getClass().getResource("walk-left-1.png"));
+                image = ii.getImage();
+                dx = -1;
         }
 
         if (key == KeyEvent.VK_RIGHT) {
+            ImageIcon ii = new ImageIcon(this.getClass().getResource("walk-right-1.png"));
+            image = ii.getImage();
             dx = 1;
         }
 
         if (key == KeyEvent.VK_UP) {
-            dy = -1;
+            jump();
         }
 
-        if (key == KeyEvent.VK_DOWN) {
-            dy = 1;
-        }
     }
 
     public void fire() {
         missiles.add(new Missile(x + CRAFT_SIZE, y + CRAFT_SIZE/2));
+    }
+
+    public void jump() {
+        y=y-40;
+        falling = true;
+        dy = 1;
     }
 
     public void keyReleased(KeyEvent e) {
@@ -93,11 +135,12 @@ public class Craft {
         }
 
         if (key == KeyEvent.VK_UP) {
-            dy = 1;
+            // JUMP
         }
 
-        if (key == KeyEvent.VK_DOWN) {
-            dy = 1;
-        }
+    }
+
+    public Rectangle getBounds() {
+        return new Rectangle(x, y, width, height);
     }
 }
