@@ -1,17 +1,20 @@
 import java.awt.Image;
 import java.awt.Rectangle; 
 
+import javax.swing.ImageIcon;
+
 public class Entity {
 	
-	private int x, y; // Co-ords of top left corner
-	private int dx, dy; // Current speed components
-	private int width, height; 
-	private boolean visible;
+	protected int x, y; // Co-ords of top left corner
+	protected int dx, dy; // Current speed components
+	protected int width, height; 
+	protected boolean visible;
 
-	private Image image;
+	protected Image image;
 
 	public int getX () { return x; }
 	public int getY () { return y; }
+	public Image getImage() { return image; }
 	public boolean isVisible () { return visible; }
 
     public Rectangle getBounds() {
