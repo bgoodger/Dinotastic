@@ -1,4 +1,4 @@
-import java.awt.Color;
+import java.awt.Color;		
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
@@ -15,60 +15,28 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.swing.ImageIcon;
 
-public class Board extends JPanel implements ActionListener {
-
-    private Timer timer;
-    private Dino dino;
-
-    //private ArrayList<Platforms> platforms = new ArrayList<Platforms>();
-
-    public Board() {
-
-        addKeyListener(new TAdapter());
-        setFocusable(true);
-        setBackground(Color.BLACK);
-        setDoubleBuffered(true);
-
-        dino = new Dino();
-
-        timer = new Timer(5, this);
-        timer.start();
-    }
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseEvent;
 
 
-    public void paint(Graphics g) {
-        super.paint(g);
-        Graphics2D g2d = (Graphics2D)g;
-        
-        // Draw what should be showing up
-        g2d.drawImage(dino.getImage(), dino.getX(), dino.getY(), this);
+public abstract class Board extends JPanel implements ActionListener, MouseMotionListener{
+	public Board() {
 
+	}
 
-        Toolkit.getDefaultToolkit().sync();
-        g.dispose();
+	public void actionPerformed(ActionEvent e) {
 
-    }
-
-
-    public void actionPerformed(ActionEvent e) {
-
-        dino.move();
-        checkCollisions();
         repaint();  
     }
 
-    public void checkCollisions() {
+	public void mouseMoved(MouseEvent me) { 
 
-    }
+    } 
 
-    private class TAdapter extends KeyAdapter {
+    public void mouseDragged(MouseEvent me) { 
 
-        public void keyReleased(KeyEvent e) {
-            dino.keyReleased(e);
-        }
+    } 
 
-        public void keyPressed(KeyEvent e) {
-            dino.keyPressed(e);
-        }
-    }
 }
+
