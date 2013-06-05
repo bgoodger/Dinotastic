@@ -39,7 +39,7 @@ public class Dino extends Entity {
 			dx = 1;
 			image = rightImage;
 		}
-		if (key == KeyEvent.VK_SPACE){
+		if (key == KeyEvent.VK_UP){
 			if (!jumping){
 				dy = -3;
 				jumping=true;

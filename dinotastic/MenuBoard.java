@@ -54,11 +54,9 @@ public class MenuBoard extends Board {
         gameSelector = new JRadioButton("Level One");
         gameSelector.setActionCommand("Level One");
 
-
         group = new ButtonGroup();
         group.add(trainingSelector);
         group.add(gameSelector);
-
 
         trainingSelector.addActionListener(this);
         gameSelector.addActionListener(this);
@@ -93,6 +91,8 @@ public class MenuBoard extends Board {
         Toolkit.getDefaultToolkit().sync();
         g.dispose();
     }
+
+
 
     
 }

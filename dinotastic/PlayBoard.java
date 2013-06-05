@@ -12,6 +12,7 @@ import java.awt.Image;
 import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JLabel;
 import javax.swing.Timer;
 import javax.swing.ImageIcon;
 
@@ -21,10 +22,14 @@ import java.awt.event.MouseEvent;
 
 public class PlayBoard extends Board {
 
+    private JLabel timeLabel;  
+    private long startTime;  
+    private long pauseTime;
     private Timer timer;
     private Dino dinoA;
     private Dino dinoB;
     private boolean twoPlayer;
+    private boolean paused = false;
     private JButton startButton;
 
     private boolean isTrainingMode;
@@ -37,7 +42,7 @@ public class PlayBoard extends Board {
 
         twoPlayer = twoP;
         setFocusable(true);
-        setBackground(Color.BLACK);
+        setBackground(Color.WHITE);
         setDoubleBuffered(true);
         isTrainingMode = trainingMode;
         startButton = new JButton("Play Game");
@@ -57,20 +62,44 @@ public class PlayBoard extends Board {
     }
 
     public void start() {
-
+        timeLabel = new JLabel(String.valueOf(timePassed()));
+        this.add(timeLabel);
         this.addKeyListener(new KAdapter(this));
         this.addMouseMotionListener(this);
         Toolkit.getDefaultToolkit().sync();
         timer.start();
+        startTime = System.currentTimeMillis();
+        
 
     }
 
+    public void pause() {
+        paused = true;
+        timer.stop();
+        pauseTime = System.currentTimeMillis();
+        
+    }
+
+    public void restart() {
+        paused = false;
+        timer.start();
+        startTime = ( System.currentTimeMillis() - pauseTime ) + startTime;
+    }
+
+
+    public long timePassed() {
+        return System.currentTimeMillis() - startTime;
+    }
 
     public void paint(Graphics g) {
 
         super.paint(g);
         Graphics2D g2d = (Graphics2D)g;
         
+        if (paused) {  
+
+        }
+
         // Draw what should be showing up
         g2d.drawImage(dinoA.getImage(), dinoA.getX(), dinoA.getY(), this);
         if (twoPlayer) {
@@ -82,7 +111,7 @@ public class PlayBoard extends Board {
             g2d.drawImage(plat.getImage(), plat.getX(), plat.getY(), this);
         }
 
-        timeLabel.setText(timer.toString()); 
+        timeLabel.setText(String.valueOf(timePassed())); 
         
         Toolkit.getDefaultToolkit().sync();
         g.dispose();
@@ -139,10 +168,7 @@ public class PlayBoard extends Board {
 
     }
 
-    public void pause() {
-        timer.stop();
-        System.out.println("pause");
-    }
+
 
     public void mouseMoved(MouseEvent me) { 
         if (twoPlayer) {dinoB.mouseMoved(me);}
@@ -165,12 +191,13 @@ public class PlayBoard extends Board {
         public void keyPressed(KeyEvent e) {
             
             if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                caller.pause();
+                if (!paused) {
+                    caller.pause();
+                } else {
+                    caller.restart();
+                }
             }
 
-            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                caller.start();
-            }
 
             dinoA.keyPressed(e);
              
