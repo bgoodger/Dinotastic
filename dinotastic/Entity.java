@@ -9,7 +9,7 @@ public class Entity {
 	protected double dx, dy; // Current speed components
 	protected int width, height; 
 	protected boolean visible;
-
+	protected double ody;
 	protected boolean falling = true; 
 
 	protected Image image;
@@ -18,18 +18,24 @@ public class Entity {
 	public int getY () { return (int) y; }
 	public double getDX () { return dx; }
 	public double getDY () { return dy; }
+	public int getWidth () { return width; }
+	public int getHeight () { return height; }
 	public void setDX (double udx) { dx = udx; }
 	public void setDY (double udy) { dy = udy; }
+	public void setX (double ux) { x = ux; }
+	public void setY (double uy) { y = uy; }
 	public Image getImage() { return image; }
 	public boolean isVisible () { return visible; }
 
+
 	public void move() {
 		x = x + .7*dx;
+		y=y + .5*dy;
 		if (falling) {  
-			y=y + .5*dy;
-			//`dy += .02;
+			dy += .02;
+		} else {
+			setDY(ody);
 		}
-
 	}	
 
     public Rectangle getBounds() {
@@ -42,7 +48,15 @@ public class Entity {
 		return ii.getImage(); 
 	}
 
-	public void isFalling(boolean f) {
+	public void resetDY() {
+		dy = ody;
+	}
+
+	public boolean isFalling() {
+		return falling;
+	} 
+
+	public void setFalling(boolean f) {
 		falling = f;
 	} 
 
