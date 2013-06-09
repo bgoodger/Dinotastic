@@ -18,8 +18,8 @@ public class Dino extends Entity {
 	private Image jumpRightImage;
 	private Image deadImage;
 	private boolean facingLeft=true;
-
-	private int healthLevel = 100;
+	private boolean canJump=false;
+	private int healthLevel = 500;
 
 	public Dino() {
         	
@@ -74,12 +74,12 @@ public class Dino extends Entity {
 	public void mouseMoved(MouseEvent me) {
 		double xx = me.getX();
 
-		if (xx<340){
-			dx = (((340-xx)/340) * -3);
+		if (xx<320){
+			dx = (((320-xx)/320) * -3);
 			image = leftImage;
 			facingLeft=true;
-		} else if (xx>340){
-			dx = (((xx-340)/340) * 3);
+		} else if (xx>320){
+			dx = (((xx-320)/320) * 3);
 			image = rightImage;
 			facingLeft=false;
 		}
@@ -96,7 +96,8 @@ public class Dino extends Entity {
 
 	public void mouseClicked (MouseEvent me) {
 		//if (me.getButton() == MouseEvent.BUTTON1) {
-			if (!jumping){
+			if (!jumping && canJump){
+
 				new Thread(new jumpThread()).start();
 			} 
 		//}
@@ -106,17 +107,26 @@ public class Dino extends Entity {
 		return  healthLevel;
 	}
 
+	public void canJump (boolean cJ) {
+		canJump = cJ;
+	}
+
 	public Rectangle getBounds() {
         return new Rectangle((int)x, (int) y+height-1, width, 1);
     }
 
     public void dead() {
+    	if(!isDead) { // Check this isn't creating duplicate threads for this dino
+    		new Thread(new SoundMaker("bison.wav")).start();
+    	}
     	isDead = true;	
     	image = deadImage;
     	falling = true;
+
     }
 
     public boolean isDead() {
+
     	return isDead;	
     }
 
@@ -125,6 +135,7 @@ public class Dino extends Entity {
     	@Override
     	public void run() {
     		try {
+    			new Thread(new SoundMaker("jump.wav")).start();
     			dy = -6;
 				jumping=true;
 				if (facingLeft){

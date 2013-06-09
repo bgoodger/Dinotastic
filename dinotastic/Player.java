@@ -1,10 +1,16 @@
 
-public class Player {
+import java.io.*; 
+
+public class Player implements java.io.Serializable {
 
 	private int wins;
-	private String playerName;
+	public String playerName;
 
-	public Player () {}
+	public Player  (int w, String name) {
+		wins = w;
+		playerName = name;
+
+	}
 	
 
 } 

@@ -14,6 +14,10 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.Timer;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
 import javax.swing.ImageIcon;
 
 import java.awt.event.MouseListener;
@@ -29,6 +33,7 @@ public class PlayBoard extends Board {
     private JLabel p2HealthLabel; 
     private JLabel pauseLabel; 
     private long startTime;  
+    private long endTime; 
     private long pauseTime;
     private Timer timer;
     private Dino dinoA;
@@ -36,9 +41,18 @@ public class PlayBoard extends Board {
     private boolean twoPlayer;
     private boolean paused = false;
     private JButton startButton;
+    private JButton returnToMenuButton;
     private JPanel mB;
     private boolean isTrainingMode;
     private boolean makePlatforms=true;
+
+
+    // Level info
+
+    private int maxPlatSpeed = -3;
+    private int minPlatSpeed = -1;
+    private int maxPlatVariation = 20;
+    private ArrayList<String> availablePlats;
 
     private ArrayList<Platform> platforms;
 
@@ -52,9 +66,14 @@ public class PlayBoard extends Board {
         setBackground(Color.WHITE);
         setDoubleBuffered(true);
         isTrainingMode = trainingMode;
+        
+        returnToMenuButton = new JButton("Return to Main Menu");
         startButton = new JButton("Play Game");
+       
         startButton.addActionListener(this);
+        returnToMenuButton.addActionListener(this);
         add(startButton);
+        add(returnToMenuButton);
         dinoA = new Dino();
         if (twoPlayer) {dinoB = new Dino();}
 
@@ -62,10 +81,13 @@ public class PlayBoard extends Board {
         platforms.add(new Platform(0,550,-1, Platform.NORMAL_PLATFORM));
         platforms.add(new Platform(240,550,-1, Platform.NORMAL_PLATFORM));
         platforms.add(new Platform(550,550,-1, Platform.NORMAL_PLATFORM));
-        timer = new Timer(5, this);
         
-        System.out.println("is training  " + isTrainingMode);
+        availablePlats = new ArrayList<String>();
+        availablePlats.add(Platform.NORMAL_PLATFORM);
+        availablePlats.add(Platform.BONE_PLATFORM);
+        availablePlats.add(Platform.SPIKE_PLATFORM);
 
+        timer = new Timer(5, this);
 
     }
 
@@ -73,6 +95,7 @@ public class PlayBoard extends Board {
         timeLabel = new JLabel(String.valueOf(timePassed()));
         pauseLabel = new JLabel("PAUSED");
         pauseLabel.setVisible(false);
+        returnToMenuButton.setVisible(false);
 
         p1HealthLabel = new JLabel(String.valueOf(dinoA.getHealth()));
         if (twoPlayer) {p2HealthLabel = new JLabel(String.valueOf(dinoB.getHealth()));}
@@ -82,8 +105,8 @@ public class PlayBoard extends Board {
 
         this.addKeyListener(new KAdapter(this));
         this.addMouseMotionListener(this);
+        this.addMouseListener(this);   
 
-        this.addMouseListener(this);            
         Toolkit.getDefaultToolkit().sync();
         timer.start();
         startTime = System.currentTimeMillis();
@@ -108,12 +131,14 @@ public class PlayBoard extends Board {
     }
 
     public void gameOver() {
+        endTime = System.currentTimeMillis();
         makePlatforms = false;
         for (int i = 0; i<platforms.size(); i++) {
             Platform plat = (Platform) platforms.get(i);
             plat.setFalling(true);
         }
 
+        returnToMenuButton.setVisible(true);
     }
 
 
@@ -139,9 +164,11 @@ public class PlayBoard extends Board {
             g2d.drawImage(plat.getImage(), plat.getX(), plat.getY(), this);
         }
         try {
-        timeLabel.setText(String.valueOf(this.timePassed())); 
-        p1HealthLabel.setText(String.valueOf(dinoA.getHealth())); 
-        if (twoPlayer) {p2HealthLabel.setText(String.valueOf(this.timePassed())); }
+            timeLabel.setText(String.valueOf(this.timePassed())); 
+            p1HealthLabel.setText(String.valueOf(dinoA.getHealth())); 
+            if (twoPlayer) {
+                p2HealthLabel.setText(String.valueOf(this.timePassed())); 
+            }
         } catch (Exception e){}
         Toolkit.getDefaultToolkit().sync();
         g.dispose();
@@ -153,20 +180,25 @@ public class PlayBoard extends Board {
         if (e.getSource() == startButton) {
             this.start();
             startButton.setVisible(false);
+        } else if( e.getSource() ==returnToMenuButton) {
+            CardLayout cl = (CardLayout)(mB.getLayout()); 
+            cl.show(mB,"menu");
+        } else {
+
+
+            for (int i = 0; i < platforms.size(); i++) {
+                Platform plat = (Platform) platforms.get(i);
+                plat.move();
+            }
+
+            dinoA.move();
+            if (twoPlayer) {dinoB.move();}
+            checkCollisions();
+            checkBounds();
+            checkGameOver();
+            repaint();  
+
         }
-
-
-        for (int i = 0; i < platforms.size(); i++) {
-            Platform plat = (Platform) platforms.get(i);
-            plat.move();
-        }
-
-        dinoA.move();
-        if (twoPlayer) {dinoB.move();}
-        checkCollisions();
-        checkBounds();
-        checkGameOver();
-        repaint();  
     }
 
 
@@ -181,7 +213,6 @@ public class PlayBoard extends Board {
                 platforms.remove(i);
             }
         }
-
 
         if (dinoA.getY() + dinoA.getHeight() > 640) {
             dinoA.dead();
@@ -217,11 +248,13 @@ public class PlayBoard extends Board {
 
         Rectangle dinoABox = dinoA.getBounds();
 
+        boolean jumpFlagA = false;
+        boolean jumpFlagB = false;
         for (int i = 0; i<platforms.size(); i++) {
             Platform plat = (Platform) platforms.get(i);
             Rectangle platBox = plat.getBounds();
-
             if (dinoABox.intersects(platBox)) {
+                jumpFlagA = true;
                 plat.interact();
                 if (plat.doesDamage()) {
                         dinoA.loseHealth(1);
@@ -233,6 +266,7 @@ public class PlayBoard extends Board {
             if (twoPlayer) { 
                 Rectangle dinoBBox = dinoB.getBounds();
                 if (dinoBBox.intersects(platBox)) {
+                    jumpFlagB = true;
                     plat.interact();
                     if (plat.doesDamage()) {
                         dinoB.loseHealth(1);
@@ -242,6 +276,9 @@ public class PlayBoard extends Board {
                 } 
             }
         }
+
+        dinoA.canJump(jumpFlagA);
+        if (twoPlayer) { dinoB.canJump(jumpFlagB);}
 
     }
 
@@ -275,10 +312,10 @@ public class PlayBoard extends Board {
             try {
                 
                 while(makePlatforms) {
-                    Thread.sleep(3000);
-                    platforms.add(new Platform(10,550,-3, Platform.NORMAL_PLATFORM));
-                    platforms.add(new Platform(280,550,-1, Platform.BONE_PLATFORM));
-                    platforms.add(new Platform(500,550,-2, Platform.NORMAL_PLATFORM));
+                    Thread.sleep(2000);
+                    platforms.add(new Platform((int)(10 + (Math.random() * maxPlatVariation)) ,550, (Math.random() * (maxPlatSpeed- minPlatSpeed) + minPlatSpeed), availablePlats.get( (int) (Math.random() * availablePlats.size()) )));
+                    platforms.add(new Platform((int)(280 + (Math.random() * maxPlatVariation)),550,(Math.random() * (maxPlatSpeed- minPlatSpeed) + minPlatSpeed), availablePlats.get( (int) (Math.random() * availablePlats.size()) )));
+                    platforms.add(new Platform((int)(500 + (Math.random() * maxPlatVariation)),550,(Math.random() * (maxPlatSpeed- minPlatSpeed) + minPlatSpeed), availablePlats.get( (int) (Math.random() * availablePlats.size()) )));
                 }
             } catch (Exception e){}
         }
