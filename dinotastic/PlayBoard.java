@@ -241,7 +241,7 @@ public class PlayBoard extends Board {
 
     public void actionPerformed(ActionEvent e) {
 
-        if (e.getSource() == startButton) {
+        if (e.getSource() == startButton) { 
             this.start();
             startButton.setVisible(false);
         } else if( e.getSource() ==returnToMenuButton) {
