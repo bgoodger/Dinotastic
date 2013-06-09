@@ -9,7 +9,7 @@ public class SoundMaker implements Runnable {
     public SoundMaker (String filePath)  {
 
         try {
-            audio = AudioSystem.getAudioInputStream(new File(filePath));
+            audio = AudioSystem.getAudioInputStream(new File("sounds/" + filePath));
             
         } catch (Exception e) {}
     }

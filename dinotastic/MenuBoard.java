@@ -23,7 +23,6 @@ import javax.swing.*;
 
 public class MenuBoard extends Board {
 
-	private PlayBoard pb;
     private JPanel mB;
 	private JButton startButtonOneP;
     private JButton startButtonTwoP;

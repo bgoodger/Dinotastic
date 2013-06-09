@@ -7,19 +7,16 @@ import javax.swing.*;
 public class Main extends JFrame {
 
     JPanel mainBoard; 
-    MenuBoard menuBoard;
-    PlayBoard gameBoard;
 
     public Main() {
 
         mainBoard = new JPanel(new CardLayout());
         mainBoard.add( new MenuBoard (mainBoard), "menu" );
         this.add (mainBoard);
-
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(640, 580);
         setLocationRelativeTo(null);
-        setTitle("Dinotastic");
+        setTitle("Jurassic Fantastic");
         setResizable(false);
         setVisible(true);
     }

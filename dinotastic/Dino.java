@@ -22,18 +22,26 @@ public class Dino extends Entity {
 	private boolean facingLeft=true;
 	private boolean canJump=false;
 	private int healthLevel = 500;
-	private double deathTime;
 
-	public Dino() {
+	public Dino(boolean redDino) {
         	
-      
-		leftImage = retrieveImage("artwork/dino-left.png");	
-		rightImage = retrieveImage("artwork/dino-right.png");
-		walkLeftImage = retrieveImage("artwork/dino-walk-left.gif");	
-		walkRightImage = retrieveImage("artwork/dino-walk-right.gif");
-		jumpLeftImage = retrieveImage("artwork/jump-left.png");	
-		jumpRightImage = retrieveImage("artwork/jump-right.png");
-		deadImage = retrieveImage("artwork/dead.png");
+      	if (redDino) {
+			leftImage = retrieveImage("artwork/dinoB-left.png");	
+			rightImage = retrieveImage("artwork/dinoB-right.png");
+			walkLeftImage = retrieveImage("artwork/dinoB-walk-left.gif");	
+			walkRightImage = retrieveImage("artwork/dinoB-walk-right.gif");
+			jumpLeftImage = retrieveImage("artwork/dinoB-jump-left.png");	
+			jumpRightImage = retrieveImage("artwork/dinoB-jump-right.png");
+			deadImage = retrieveImage("artwork/dinoB-dead.png");
+		} else {
+			leftImage = retrieveImage("artwork/dino-left.png");	
+			rightImage = retrieveImage("artwork/dino-right.png");
+			walkLeftImage = retrieveImage("artwork/dino-walk-left.gif");	
+			walkRightImage = retrieveImage("artwork/dino-walk-right.gif");
+			jumpLeftImage = retrieveImage("artwork/dino-jump-left.png");	
+			jumpRightImage = retrieveImage("artwork/dino-jump-right.png");
+			deadImage = retrieveImage("artwork/dino-dead.png");
+		}
 		falling = true;
 		image = leftImage;
         width = image.getWidth(null);
@@ -87,13 +95,13 @@ public class Dino extends Entity {
 
 		if (xx<320){
 			dx = (((320-xx)/320) * -3);
-			image = leftImage;
+			image = walkLeftImage;
 			facingLeft=true;
 		} else if (xx>320){
 			dx = (((xx-320)/320) * 3);
-			image = rightImage;
+			image = walkRightImage;
 			facingLeft=false;
-		}
+		} 
 
 	}
 
@@ -133,7 +141,6 @@ public class Dino extends Entity {
     		new Thread(new SoundMaker("bison.wav")).start();
     	}
     	isDead = true;	
-    	deathTime = System.currentTimeMillis();
     	healthLevel = 0;
     	image = deadImage;
     	falling = true;

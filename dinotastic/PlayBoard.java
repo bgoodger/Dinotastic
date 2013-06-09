@@ -88,8 +88,8 @@ public class PlayBoard extends Board {
         menuBar.add(returnToMenuButton);
         menuBar.setBackground(Color.WHITE);
         add(menuBar, BorderLayout.PAGE_START);
-        dinoA = new Dino();
-        if (twoPlayer) {dinoB = new Dino();}
+        dinoA = new Dino(false);
+        if (twoPlayer) {dinoB = new Dino(true);}
 
         platforms = new ArrayList<Platform>();
         platforms.add(new Platform(0,550,-1, Platform.NORMAL_PLATFORM));
@@ -150,9 +150,7 @@ public class PlayBoard extends Board {
         timer.start();
         startTime = ( System.currentTimeMillis() - pauseTime ) + startTime;
     }
-
-    public void gameOver() {
-       
+    public void gameOver(String winner) {  
        if (!gameOver) {
             endTime = timePassed();
             makePlatforms = false;
@@ -160,19 +158,21 @@ public class PlayBoard extends Board {
                 Platform plat = (Platform) platforms.get(i);
                 plat.setFalling(true);
             }
-
             returnToMenuButton.setVisible(true);
-           
-            endLabel = new JLabel(String.valueOf("Final Score: " + endTime));
+            if (twoPlayer) {
+                endLabel = new JLabel(String.valueOf("Winner: " + winner));
+            } else
+                endLabel = new JLabel(String.valueOf("Final Score: " + endTime));
+            }
             if (!isTrainingMode) {
                 menuBar.add(endLabel);
             }
             endLabel.setVisible(true);
             timeLabel.setVisible(false);
+            p1HealthLabel.setVisible(false);
+            if(twoPlayer) { p2HealthLabel.setVisible(false);}
             gameOver=true;
         }
-
-    }
 
     public void increaseLevel() {
         
@@ -194,6 +194,7 @@ public class PlayBoard extends Board {
 
     }
 
+    // Returns the time passed in millie seconds since the game was started
     public long timePassed() {
         return System.currentTimeMillis() - startTime;
     }
@@ -351,24 +352,22 @@ public class PlayBoard extends Board {
         
         if(twoPlayer) {
             if ((!dinoA.isDead()) && dinoB.isDead() ) {
-                gameOver();
+                gameOver("Player One");
             } else if (dinoA.isDead() && (!dinoB.isDead()) ) {
-                gameOver();
+
+                gameOver("Player Two");
             }
         } else {
             if (dinoA.isDead()) {
-                gameOver();
+                gameOver(null);
             }
         }
 
     }
 
-
-    @Override
     public void mouseMoved(MouseEvent me) { 
         if (twoPlayer) {dinoB.mouseMoved(me);}
     } 
-    @Override
     public void mouseReleased(MouseEvent me) {
         if (twoPlayer) {dinoB.mouseClicked(me);}
     }
@@ -379,9 +378,8 @@ public class PlayBoard extends Board {
         @Override
         public void run() {
             try {
-                
                 while(makePlatforms) {
-                    Thread.sleep(2000);
+                    Thread.sleep(1500);
                     platforms.add(new Platform((int)(10 + (Math.random() * maxPlatVariation)) ,550, (Math.random() * (maxPlatSpeed- minPlatSpeed) + minPlatSpeed), availablePlats.get( (int) (Math.random() * availablePlats.size()) )));
                     platforms.add(new Platform((int)(280 + (Math.random() * maxPlatVariation)),550,(Math.random() * (maxPlatSpeed- minPlatSpeed) + minPlatSpeed), availablePlats.get( (int) (Math.random() * availablePlats.size()) )));
                     platforms.add(new Platform((int)(500 + (Math.random() * maxPlatVariation)),550,(Math.random() * (maxPlatSpeed- minPlatSpeed) + minPlatSpeed), availablePlats.get( (int) (Math.random() * availablePlats.size()) )));
