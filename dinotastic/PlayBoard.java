@@ -33,6 +33,7 @@ public class PlayBoard extends Board {
     private JLabel p2HealthLabel; 
     private JLabel pauseLabel; 
     private JLabel endLabel;
+    private JLabel levelLabel;
     private long startTime;  
     private long endTime; 
     private long pauseTime;
@@ -103,22 +104,25 @@ public class PlayBoard extends Board {
     }
 
     public void start() {
+        gameOver = false;
         timeLabel = new JLabel(String.valueOf(timePassed()));
         pauseLabel = new JLabel("PAUSED");
         pauseLabel.setVisible(false);
         returnToMenuButton.setVisible(false);
-
+        levelLabel = new JLabel ("LEVEL ONE");
         p1HealthLabel = new JLabel(String.valueOf(dinoA.getHealth()));
         
         menuBar.add(pauseLabel);
-        menuBar.add(timeLabel);        
+       
+        if( !isTrainingMode) {
+            menuBar.add(timeLabel);
+            menuBar.add(levelLabel);
+        }        
         menuBar.add(p1HealthLabel);
         if (twoPlayer) {
             p2HealthLabel = new JLabel(String.valueOf(dinoB.getHealth()));
             menuBar.add(p2HealthLabel);
         }
-        
-
 
         this.addKeyListener(new KAdapter(this));
         this.addMouseMotionListener(this);
@@ -160,7 +164,9 @@ public class PlayBoard extends Board {
             returnToMenuButton.setVisible(true);
            
             endLabel = new JLabel(String.valueOf("Final Score: " + endTime));
-            menuBar.add(endLabel);
+            if (!isTrainingMode) {
+                menuBar.add(endLabel);
+            }
             endLabel.setVisible(true);
             timeLabel.setVisible(false);
             gameOver=true;
@@ -175,12 +181,15 @@ public class PlayBoard extends Board {
             maxPlatSpeed -= 1;
             maxPlatSpeed -= 1;
             maxPlatVariation = 20;
+            levelLabel.setText("LEVEL ONE");
         } else if (currentLevel == 2) {
             availablePlats.add(Platform.BONE_PLATFORM);
+            levelLabel.setText("LEVEL TWO");
         } else if (currentLevel == 3) {
             availablePlats.add(Platform.SPIKE_PLATFORM);
+            levelLabel.setText("LEVEL THREE");
         } else if (currentLevel >= 4) {
-
+            levelLabel.setText("LEVEL FOUR");
         }
 
     }
@@ -201,11 +210,15 @@ public class PlayBoard extends Board {
         if (twoPlayer) {
             g2d.drawImage(dinoB.getImage(), dinoB.getX(), dinoB.getY(), this);
         }
+
+        if (!gameOver){
           
-        for (int i = 0; i<platforms.size(); i++) {
-            Platform plat = (Platform) platforms.get(i);
-            g2d.drawImage(plat.getImage(), plat.getX(), plat.getY(), this);
+            for (int i = 0; i<platforms.size(); i++) {
+                Platform plat = (Platform) platforms.get(i);
+                g2d.drawImage(plat.getImage(), plat.getX(), plat.getY(), this);
+            }
         }
+
         try {
             timeLabel.setText("Score:  " + String.valueOf(this.timePassed())); 
             p1HealthLabel.setText("Player One Health:  " + String.valueOf(dinoA.getHealth())); 
@@ -214,7 +227,7 @@ public class PlayBoard extends Board {
             }
         } catch (Exception e){}
         
-        if (!isTrainingMode){
+        if (!isTrainingMode && !gameOver){
            levelCounter++;
            if (levelCounter > 1000) {
             increaseLevel();
@@ -243,10 +256,12 @@ public class PlayBoard extends Board {
 
             dinoA.move();
             if (twoPlayer) {dinoB.move();}
-            checkCollisions();
+            if (!gameOver){
+                checkCollisions();
+            }
             checkBounds();
-            checkGameOver();
             repaint();  
+            checkGameOver();
 
         }
     }
@@ -333,13 +348,16 @@ public class PlayBoard extends Board {
     }
 
     public void checkGameOver() {
-        if (dinoA.isDead()) {
-            if (twoPlayer) {
-                if(dinoB.isDead()){
-                    this.gameOver();
-                }
-            } else {
-                this.gameOver();
+        
+        if(twoPlayer) {
+            if ((!dinoA.isDead()) && dinoB.isDead() ) {
+                gameOver();
+            } else if (dinoA.isDead() && (!dinoB.isDead()) ) {
+                gameOver();
+            }
+        } else {
+            if (dinoA.isDead()) {
+                gameOver();
             }
         }
 

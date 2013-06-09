@@ -70,9 +70,11 @@ public class MenuBoard extends Board {
         topBox.add(trainingSelector);
         topBox.add(gameSelector);
 
-        JPanel blankBox = new JPanel(new FlowLayout( FlowLayout.CENTER));
-        blankBox.setPreferredSize(new Dimension(600,450));
-        this.add(blankBox);
+        JPanel mainBox = new JPanel(new FlowLayout( FlowLayout.CENTER));
+        mainBox.setPreferredSize(new Dimension(600,450));
+
+        mainBox.add(new JLabel (new ImageIcon("artwork/menu.png")));
+        this.add(mainBox);
         this.add(topBox);
         this.add(bottomBox);
 	} 

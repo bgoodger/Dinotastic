@@ -22,6 +22,7 @@ public class Dino extends Entity {
 	private boolean facingLeft=true;
 	private boolean canJump=false;
 	private int healthLevel = 500;
+	private double deathTime;
 
 	public Dino() {
         	
@@ -100,8 +101,8 @@ public class Dino extends Entity {
 		healthLevel -= amount;
 		//hurtSound.start();
 		
-
 		if (healthLevel <= 0) {
+			healthLevel = 0;
 			dead();	
 		}
 	}
@@ -132,13 +133,14 @@ public class Dino extends Entity {
     		new Thread(new SoundMaker("bison.wav")).start();
     	}
     	isDead = true;	
+    	deathTime = System.currentTimeMillis();
+    	healthLevel = 0;
     	image = deadImage;
     	falling = true;
 
     }
 
     public boolean isDead() {
-
     	return isDead;	
     }
 
