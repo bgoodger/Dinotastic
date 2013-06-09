@@ -35,6 +35,12 @@ public class MenuBoard extends Board {
 
 	public MenuBoard(JPanel cardBoard ) {
 
+        this.setLayout(new FlowLayout( FlowLayout.CENTER));
+
+
+        JPanel topBox = new JPanel(new FlowLayout( FlowLayout.CENTER));
+        JPanel bottomBox = new JPanel(new FlowLayout( FlowLayout.CENTER));
+        topBox.setPreferredSize(new Dimension(600,50));
 		setFocusable(true);
         setBackground(Color.WHITE);
         setDoubleBuffered(true);
@@ -42,17 +48,17 @@ public class MenuBoard extends Board {
 
         startButtonOneP = new JButton("START ONE PLAYER");
         startButtonOneP.addActionListener(this);
-        this.add(startButtonOneP);
+        bottomBox.add(startButtonOneP);
 
         startButtonTwoP = new JButton("START TWO PLAYER");
         startButtonTwoP.addActionListener(this);
-        this.add(startButtonTwoP);
+        bottomBox.add(startButtonTwoP);
 
         trainingSelector = new JRadioButton("Training");
         trainingSelector.setActionCommand("Training");
         trainingSelector.setSelected(true);
-        gameSelector = new JRadioButton("Level One");
-        gameSelector.setActionCommand("Level One");
+        gameSelector = new JRadioButton("Play Game");
+        gameSelector.setActionCommand("Play Game");
 
         group = new ButtonGroup();
         group.add(trainingSelector);
@@ -61,8 +67,14 @@ public class MenuBoard extends Board {
         trainingSelector.addActionListener(this);
         gameSelector.addActionListener(this);
 
-        this.add(trainingSelector);
-        this.add(gameSelector);
+        topBox.add(trainingSelector);
+        topBox.add(gameSelector);
+
+        JPanel blankBox = new JPanel(new FlowLayout( FlowLayout.CENTER));
+        blankBox.setPreferredSize(new Dimension(600,450));
+        this.add(blankBox);
+        this.add(topBox);
+        this.add(bottomBox);
 	} 
 
 
@@ -78,7 +90,7 @@ public class MenuBoard extends Board {
                 cl.show(mB,"game");
         } else if (e.getSource() ==  trainingSelector) {
                 trainingMode = true;
-        } else if (e.getSource() == gameSelector ) {
+        } else if (e.getSource() == gameSelector) {
                 trainingMode = false;
         }
     
@@ -87,7 +99,7 @@ public class MenuBoard extends Board {
     public void paint(Graphics g) {
         super.paint(g);
         Graphics2D g2d = (Graphics2D)g;
-        g2d.drawImage(new ImageIcon("artwork/menu.png").getImage(), 100, 50, mB); 
+        //g2d.drawImage(new ImageIcon("artwork/menu.png").getImage(), 100, 50, mB); 
         Toolkit.getDefaultToolkit().sync();
         g.dispose();
     }

@@ -32,6 +32,7 @@ public class PlayBoard extends Board {
     private JLabel p1HealthLabel;  
     private JLabel p2HealthLabel; 
     private JLabel pauseLabel; 
+    private JLabel endLabel;
     private long startTime;  
     private long endTime; 
     private long pauseTime;
@@ -43,12 +44,16 @@ public class PlayBoard extends Board {
     private JButton startButton;
     private JButton returnToMenuButton;
     private JPanel mB;
+    private JPanel menuBar;
     private boolean isTrainingMode;
     private boolean makePlatforms=true;
+    private boolean gameOver=false;
+    private int levelCounter;
 
 
     // Level info
 
+    private int currentLevel = 0;
     private int maxPlatSpeed = -3;
     private int minPlatSpeed = -1;
     private int maxPlatVariation = 20;
@@ -59,6 +64,12 @@ public class PlayBoard extends Board {
     public PlayBoard() {};
 
     public PlayBoard(JPanel cardBoard, boolean twoP, boolean trainingMode) {
+
+
+        menuBar = new JPanel( new FlowLayout(FlowLayout.CENTER,5,0));
+        this.setLayout(new BorderLayout());
+        BorderLayout bl = (BorderLayout)(this.getLayout());
+        bl.setVgap(0);
 
         mB = cardBoard;
         twoPlayer = twoP;
@@ -72,8 +83,10 @@ public class PlayBoard extends Board {
        
         startButton.addActionListener(this);
         returnToMenuButton.addActionListener(this);
-        add(startButton);
-        add(returnToMenuButton);
+        menuBar.add(startButton);
+        menuBar.add(returnToMenuButton);
+        menuBar.setBackground(Color.WHITE);
+        add(menuBar, BorderLayout.PAGE_START);
         dinoA = new Dino();
         if (twoPlayer) {dinoB = new Dino();}
 
@@ -84,8 +97,6 @@ public class PlayBoard extends Board {
         
         availablePlats = new ArrayList<String>();
         availablePlats.add(Platform.NORMAL_PLATFORM);
-        availablePlats.add(Platform.BONE_PLATFORM);
-        availablePlats.add(Platform.SPIKE_PLATFORM);
 
         timer = new Timer(5, this);
 
@@ -98,10 +109,16 @@ public class PlayBoard extends Board {
         returnToMenuButton.setVisible(false);
 
         p1HealthLabel = new JLabel(String.valueOf(dinoA.getHealth()));
-        if (twoPlayer) {p2HealthLabel = new JLabel(String.valueOf(dinoB.getHealth()));}
-        this.add(timeLabel);        
-        this.add(pauseLabel);
-        this.add(p1HealthLabel);
+        
+        menuBar.add(pauseLabel);
+        menuBar.add(timeLabel);        
+        menuBar.add(p1HealthLabel);
+        if (twoPlayer) {
+            p2HealthLabel = new JLabel(String.valueOf(dinoB.getHealth()));
+            menuBar.add(p2HealthLabel);
+        }
+        
+
 
         this.addKeyListener(new KAdapter(this));
         this.addMouseMotionListener(this);
@@ -131,16 +148,42 @@ public class PlayBoard extends Board {
     }
 
     public void gameOver() {
-        endTime = System.currentTimeMillis();
-        makePlatforms = false;
-        for (int i = 0; i<platforms.size(); i++) {
-            Platform plat = (Platform) platforms.get(i);
-            plat.setFalling(true);
+       
+       if (!gameOver) {
+            endTime = timePassed();
+            makePlatforms = false;
+            for (int i = 0; i<platforms.size(); i++) {
+                Platform plat = (Platform) platforms.get(i);
+                plat.setFalling(true);
+            }
+
+            returnToMenuButton.setVisible(true);
+           
+            endLabel = new JLabel(String.valueOf("Final Score: " + endTime));
+            menuBar.add(endLabel);
+            endLabel.setVisible(true);
+            timeLabel.setVisible(false);
+            gameOver=true;
         }
 
-        returnToMenuButton.setVisible(true);
     }
 
+    public void increaseLevel() {
+        
+        currentLevel++;
+        if (currentLevel == 1) {
+            maxPlatSpeed -= 1;
+            maxPlatSpeed -= 1;
+            maxPlatVariation = 20;
+        } else if (currentLevel == 2) {
+            availablePlats.add(Platform.BONE_PLATFORM);
+        } else if (currentLevel == 3) {
+            availablePlats.add(Platform.SPIKE_PLATFORM);
+        } else if (currentLevel >= 4) {
+
+        }
+
+    }
 
     public long timePassed() {
         return System.currentTimeMillis() - startTime;
@@ -151,7 +194,7 @@ public class PlayBoard extends Board {
         super.paint(g);
         Graphics2D g2d = (Graphics2D)g;
 
-        g2d.drawImage(new ImageIcon("artwork/bg.png").getImage(), 0, -10, this);
+        g2d.drawImage(new ImageIcon("artwork/bg.png").getImage(), 0, 30, this);
 
         // Draw what should be showing up
         g2d.drawImage(dinoA.getImage(), dinoA.getX(), dinoA.getY(), this);
@@ -164,12 +207,20 @@ public class PlayBoard extends Board {
             g2d.drawImage(plat.getImage(), plat.getX(), plat.getY(), this);
         }
         try {
-            timeLabel.setText(String.valueOf(this.timePassed())); 
-            p1HealthLabel.setText(String.valueOf(dinoA.getHealth())); 
+            timeLabel.setText("Score:  " + String.valueOf(this.timePassed())); 
+            p1HealthLabel.setText("Player One Health:  " + String.valueOf(dinoA.getHealth())); 
             if (twoPlayer) {
-                p2HealthLabel.setText(String.valueOf(this.timePassed())); 
+                p2HealthLabel.setText(String.valueOf("Player Two Health:  " + dinoB.getHealth())); 
             }
         } catch (Exception e){}
+        
+        if (!isTrainingMode){
+           levelCounter++;
+           if (levelCounter > 1000) {
+            increaseLevel();
+            levelCounter =0;
+           }
+        }
         Toolkit.getDefaultToolkit().sync();
         g.dispose();
     }
@@ -184,7 +235,6 @@ public class PlayBoard extends Board {
             CardLayout cl = (CardLayout)(mB.getLayout()); 
             cl.show(mB,"menu");
         } else {
-
 
             for (int i = 0; i < platforms.size(); i++) {
                 Platform plat = (Platform) platforms.get(i);
@@ -232,7 +282,7 @@ public class PlayBoard extends Board {
             if (dinoB.getY() + dinoB.getHeight() > 640) {
                 dinoB.dead();
             } else if (dinoB.getY() < 50) {
-                // Decrease life
+                dinoB.loseHealth(1);
                 dinoB.setY(52);
             }
 
@@ -292,6 +342,7 @@ public class PlayBoard extends Board {
                 this.gameOver();
             }
         }
+
     }
 
 

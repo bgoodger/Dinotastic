@@ -30,7 +30,7 @@ public class Entity {
 
 	public void move() {
 		x = x + .7*dx;
-		y=y + .5*dy;
+		y = y + .5*dy;
 		if (falling) {  
 			dy += .02;
 		} else {
