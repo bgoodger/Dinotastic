@@ -14,6 +14,8 @@ public class Dino extends Entity {
 	private boolean jumping=false;
 	private Image leftImage;
 	private Image rightImage; 
+	private Image walkLeftImage;
+	private Image walkRightImage; 
 	private Image jumpLeftImage;
 	private Image jumpRightImage;
 	private Image deadImage;
@@ -23,8 +25,11 @@ public class Dino extends Entity {
 
 	public Dino() {
         	
+      
 		leftImage = retrieveImage("artwork/dino-left.png");	
 		rightImage = retrieveImage("artwork/dino-right.png");
+		walkLeftImage = retrieveImage("artwork/dino-walk-left.gif");	
+		walkRightImage = retrieveImage("artwork/dino-walk-right.gif");
 		jumpLeftImage = retrieveImage("artwork/jump-left.png");	
 		jumpRightImage = retrieveImage("artwork/jump-right.png");
 		deadImage = retrieveImage("artwork/dead.png");
@@ -32,7 +37,6 @@ public class Dino extends Entity {
 		image = leftImage;
         width = image.getWidth(null);
         height = image.getHeight(null);
-        //dx=0;
         dy=1;	
         ody=dy;
 	}
@@ -42,12 +46,12 @@ public class Dino extends Entity {
 		
 		if (key == KeyEvent.VK_LEFT) {
 			dx = -3;
-			image = leftImage;
+			image = walkLeftImage;
 			facingLeft=true;
 		}
 		if (key == KeyEvent.VK_RIGHT) {
 			dx = 3;
-			image = rightImage;
+			image = walkRightImage;
 			facingLeft=false;
 		}
 		if (key == KeyEvent.VK_UP){
@@ -67,8 +71,14 @@ public class Dino extends Entity {
 
 		int key = e.getKeyCode();
 
-		if (key == KeyEvent.VK_LEFT) {dx=0;}
-		if (key == KeyEvent.VK_RIGHT) {dx=0;}
+		if (key == KeyEvent.VK_LEFT) {
+			dx=0;
+			image = leftImage;
+		}
+		if (key == KeyEvent.VK_RIGHT) {
+			dx=0;
+			image = rightImage;
+		}
 	}
 
 	public void mouseMoved(MouseEvent me) {
@@ -88,6 +98,8 @@ public class Dino extends Entity {
 
 	public void loseHealth(int amount) {
 		healthLevel -= amount;
+		//hurtSound.start();
+		
 
 		if (healthLevel <= 0) {
 			dead();	
